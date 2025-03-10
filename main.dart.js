@@ -76996,7 +76996,7 @@ s.aN()
 s.r=new A.rx(B.jy,512,8,30,24,0.5,0.35,!1)
 s.e=A.ary(!0)
 s.Nq()},
-NC(){var s,r,q,p,o,n,m,l,k=this,j="packages/vad/assets/"
+NC(){var s,r,q,p,o,n,m,l,k=this,j="assets/packages/vad/assets/"
 k.e===$&&A.a()
 s=k.r
 s===$&&A.a()
