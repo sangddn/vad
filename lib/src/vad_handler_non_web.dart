@@ -13,7 +13,7 @@ import 'vad_iterator_base.dart';
 /// VadHandlerNonWeb class
 class VadHandlerNonWeb implements VadHandlerBase {
   /// Audio streamer.
-  /// 
+  ///
   /// This is not automatically disposed.
   final AudioStreamer audioStreamer;
 
@@ -162,11 +162,21 @@ class VadHandlerNonWeb implements VadHandlerBase {
     }
 
     // Start recording with a stream
-    final stream = await audioStreamer.startStream();
-
-    _audioStreamSubscription = stream.listen((data) async {
-      await _vadIterator.processAudioData(data);
+    final stream = await audioStreamer.startStream().onError((e, st) {
+      _onErrorController.add('AudioStreamer error: ${e.toString()}');
+      if (isDebug) debugPrint('Error starting audio stream: $e');
+      return Stream.value([]);
     });
+
+    _audioStreamSubscription = stream.listen(
+      (data) async {
+        await _vadIterator.processAudioData(data);
+      },
+      onError: (e, st) {
+        _onErrorController.add('AudioStreamer error: ${e.toString()}');
+        if (isDebug) debugPrint('Error processing audio data: $e');
+      },
+    );
   }
 
   @override
