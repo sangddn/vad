@@ -6,7 +6,6 @@ import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
-import 'package:vad/src/audio_streamer.dart';
 
 import 'vad_handler_base.dart';
 
