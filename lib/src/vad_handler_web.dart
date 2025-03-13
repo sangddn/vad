@@ -6,6 +6,7 @@ import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
+import 'package:vad/src/audio_streamer.dart';
 
 import 'vad_handler_base.dart';
 
@@ -228,9 +229,3 @@ class VadHandlerWeb implements VadHandlerBase {
     stopListeningImpl();
   }
 }
-
-/// Create a VAD handler for the web
-/// isDebug is used to print debug messages
-/// modelPath is not used in the web implementation, adding it will not have any effect
-VadHandlerBase createVadHandler({required isDebug, modelPath}) =>
-    VadHandlerWeb(isDebug: isDebug);

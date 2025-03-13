@@ -3,18 +3,22 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:record/record.dart';
 import 'package:vad/src/vad_handler_base.dart';
 import 'package:vad/src/vad_iterator.dart';
 
+import 'audio_streamer.dart';
 import 'vad_event.dart';
 import 'vad_iterator_base.dart';
 
 /// VadHandlerNonWeb class
 class VadHandlerNonWeb implements VadHandlerBase {
-  final AudioRecorder _audioRecorder = AudioRecorder();
-  final RecordConfig recordConfig;
+  /// Audio streamer
+  final AudioStreamer audioStreamer;
+
+  /// VAD iterator
   late VadIteratorBase _vadIterator;
+
+  /// Audio stream subscription
   StreamSubscription<List<int>>? _audioStreamSubscription;
 
   /// Path to the model file
@@ -63,17 +67,11 @@ class VadHandlerNonWeb implements VadHandlerBase {
   Stream<String> get onError => _onErrorController.stream;
 
   /// Constructor
-  VadHandlerNonWeb(
-      {required this.isDebug,
-      this.recordConfig = const RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
-          sampleRate: sampleRate,
-          bitRate: 16,
-          numChannels: 1,
-          echoCancel: true,
-          autoGain: true,
-          noiseSuppress: true),
-      this.modelPath = ''});
+  VadHandlerNonWeb({
+    required this.isDebug,
+    required this.audioStreamer,
+    this.modelPath = '',
+  });
 
   /// Handle VAD event
   void _handleVadEvent(VadEvent event) {
@@ -151,7 +149,7 @@ class VadHandlerNonWeb implements VadHandlerBase {
       _isInitialized = true;
     }
 
-    bool hasPermission = await _audioRecorder.hasPermission();
+    bool hasPermission = await audioStreamer.hasPermission();
     if (!hasPermission) {
       _onErrorController
           .add('VadHandlerNonWeb: No permission to record audio.');
@@ -162,7 +160,7 @@ class VadHandlerNonWeb implements VadHandlerBase {
     }
 
     // Start recording with a stream
-    final stream = await _audioRecorder.startStream(recordConfig);
+    final stream = await audioStreamer.startStream();
 
     _audioStreamSubscription = stream.listen((data) async {
       await _vadIterator.processAudioData(data);
@@ -180,7 +178,7 @@ class VadHandlerNonWeb implements VadHandlerBase {
 
       await _audioStreamSubscription?.cancel();
       _audioStreamSubscription = null;
-      await _audioRecorder.stop();
+      await audioStreamer.stopStream();
       _vadIterator.reset();
     } catch (e) {
       _onErrorController.add(e.toString());
@@ -201,7 +199,3 @@ class VadHandlerNonWeb implements VadHandlerBase {
     _onErrorController.close();
   }
 }
-
-/// Create a VAD handler for the non-web platforms
-VadHandlerBase createVadHandler({required isDebug, modelPath}) =>
-    VadHandlerNonWeb(isDebug: isDebug, modelPath: modelPath);
