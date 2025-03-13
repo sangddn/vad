@@ -4,7 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+
 import 'package:flutter/foundation.dart';
+
 import 'vad_handler_base.dart';
 
 /// Start listening for voice activity detection (JS-binding)

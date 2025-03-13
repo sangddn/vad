@@ -1,16 +1,19 @@
 // vad_handler_non_web.dart
 
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:record/record.dart';
 import 'package:vad/src/vad_handler_base.dart';
 import 'package:vad/src/vad_iterator.dart';
-import 'dart:async';
+
 import 'vad_event.dart';
 import 'vad_iterator_base.dart';
 
 /// VadHandlerNonWeb class
 class VadHandlerNonWeb implements VadHandlerBase {
   final AudioRecorder _audioRecorder = AudioRecorder();
+  final RecordConfig recordConfig;
   late VadIteratorBase _vadIterator;
   StreamSubscription<List<int>>? _audioStreamSubscription;
 
@@ -60,7 +63,8 @@ class VadHandlerNonWeb implements VadHandlerBase {
   Stream<String> get onError => _onErrorController.stream;
 
   /// Constructor
-  VadHandlerNonWeb({required this.isDebug, this.modelPath = ''});
+  VadHandlerNonWeb(
+      {required this.isDebug, required this.recordConfig, this.modelPath = ''});
 
   /// Handle VAD event
   void _handleVadEvent(VadEvent event) {
@@ -198,4 +202,7 @@ class VadHandlerNonWeb implements VadHandlerBase {
 
 /// Create a VAD handler for the non-web platforms
 VadHandlerBase createVadHandler({required isDebug, modelPath}) =>
-    VadHandlerNonWeb(isDebug: isDebug, modelPath: modelPath);
+    VadHandlerNonWeb(
+        isDebug: isDebug,
+        recordConfig: const RecordConfig(),
+        modelPath: modelPath);
