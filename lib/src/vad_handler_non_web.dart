@@ -64,7 +64,16 @@ class VadHandlerNonWeb implements VadHandlerBase {
 
   /// Constructor
   VadHandlerNonWeb(
-      {required this.isDebug, required this.recordConfig, this.modelPath = ''});
+      {required this.isDebug,
+      this.recordConfig = const RecordConfig(
+          encoder: AudioEncoder.pcm16bits,
+          sampleRate: sampleRate,
+          bitRate: 16,
+          numChannels: 1,
+          echoCancel: true,
+          autoGain: true,
+          noiseSuppress: true),
+      this.modelPath = ''});
 
   /// Handle VAD event
   void _handleVadEvent(VadEvent event) {
@@ -153,14 +162,7 @@ class VadHandlerNonWeb implements VadHandlerBase {
     }
 
     // Start recording with a stream
-    final stream = await _audioRecorder.startStream(const RecordConfig(
-        encoder: AudioEncoder.pcm16bits,
-        sampleRate: sampleRate,
-        bitRate: 16,
-        numChannels: 1,
-        echoCancel: true,
-        autoGain: true,
-        noiseSuppress: true));
+    final stream = await _audioRecorder.startStream(recordConfig);
 
     _audioStreamSubscription = stream.listen((data) async {
       await _vadIterator.processAudioData(data);
@@ -202,7 +204,4 @@ class VadHandlerNonWeb implements VadHandlerBase {
 
 /// Create a VAD handler for the non-web platforms
 VadHandlerBase createVadHandler({required isDebug, modelPath}) =>
-    VadHandlerNonWeb(
-        isDebug: isDebug,
-        recordConfig: const RecordConfig(),
-        modelPath: modelPath);
+    VadHandlerNonWeb(isDebug: isDebug, modelPath: modelPath);
