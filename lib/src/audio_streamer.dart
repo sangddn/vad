@@ -20,4 +20,7 @@ abstract interface class AudioStreamer {
   ///
   /// Returns a [Future] that completes when the stream has been stopped.
   Future<void> stopStream();
+
+  /// Disposes the audio streamer if it is not needed anymore.
+  Future<void> dispose();
 }

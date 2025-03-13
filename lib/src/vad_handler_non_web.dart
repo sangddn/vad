@@ -12,7 +12,9 @@ import 'vad_iterator_base.dart';
 
 /// VadHandlerNonWeb class
 class VadHandlerNonWeb implements VadHandlerBase {
-  /// Audio streamer
+  /// Audio streamer.
+  /// 
+  /// This is not automatically disposed.
   final AudioStreamer audioStreamer;
 
   /// VAD iterator
